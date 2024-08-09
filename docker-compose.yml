@@ -1,0 +1,103 @@
+name: laravel-api
+services:
+    ####################################################################################################
+    # PHP
+    ####################################################################################################
+    php:
+        container_name: laravel-api-php
+        #image: ghcr.io/aigletter/dictionary:master
+        build:
+            context: .
+            dockerfile: Dockerfile
+            args:
+                - UID=${UID:-1000}
+                - GID=${GID:-1000}
+            #secrets:
+            #    - composer_auth
+        restart: unless-stopped
+#        ports:
+#            - 5173:5173
+        volumes:
+            - .:/var/www:cached
+            - ./.docker/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+        environment:
+            PHP_IDE_CONFIG: serverName=laravel-api
+            APP_ENV: ${APP_ENV:-production}
+        depends_on:
+            - db
+
+
+    ####################################################################################################
+    # Nginx
+    ####################################################################################################
+    nginx:
+        container_name: laravel-api-nginx
+        image: nginx
+        restart: unless-stopped
+        ports:
+            - 8088:80
+        volumes:
+            - .:/var/www
+            - .docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+            - .docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+        depends_on:
+            - php
+        #environment:
+        #    - VIRTUAL_HOST=dictionary
+        #    - VIRTUAL_PORT=80
+#        networks:
+#            - laravel-api
+
+    #composer:
+    #    image: composer:lts
+    #    container_name: laravel-api-composer
+    #    volumes:
+    #        - .:/var/www
+    #    working_dir: /var/www
+    #    command: bash -c "composer install"
+
+#    ####################################################################################################
+#    # DATABASE (MySQL)
+#    ####################################################################################################
+#    db:
+#        image: mysql
+#        container_name: laravel-api-db
+##        ports:
+##            - 3336:3306
+#        volumes:
+#            - .docker/db/data:/var/lib/mysql
+#            - .docker/db/my.cnf:/etc/mysql/conf.d/my.cnf
+#            - .docker/logs:/var/log/mysql
+#        environment:
+#            MYSQL_ROOT_PASSWORD: root
+#            MYSQL_DATABASE: laravel
+#            MYSQL_USER: laravel
+#            MYSQL_PASSWORD: laravel
+##        networks:
+##            - laravel-api
+
+    # ####################################################################################################
+    # # DATABASE (MariaDB)
+    # ####################################################################################################
+    db:
+        image: mariadb
+        container_name: laravel-api-db
+        ports:
+            - 3336:3306
+        volumes:
+            - .docker/db/data:/var/lib/mysql
+            - .docker/db/my.cnf:/etc/mysql/conf.d/my.cnf
+            #- .docker/db/sql:/docker-entrypoint-initdb.d
+            - .docker/logs:/var/log/mysql
+        environment:
+            #MARIADB_ROOT_PASSWORD: root
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: laravel
+            MYSQL_USER: laravel
+            MYSQL_PASSWORD: laravel
+
+networks:
+    default:
+        name: laravel-api
+#    laravel-api:
+#        driver: bridge

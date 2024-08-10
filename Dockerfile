@@ -21,6 +21,12 @@ RUN docker-php-ext-install zip pdo_mysql
 # Supervisor
 RUN apt-get install -y supervisor
 
+# Composer
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+RUN php composer-setup.php
+RUN php -r "unlink('composer-setup.php');"
+RUN mv composer.phar /usr/local/bin/composer
+
 WORKDIR /var/www
 #COPY ./ /var/www/
 

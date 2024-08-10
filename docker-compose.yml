@@ -5,7 +5,6 @@ services:
     ####################################################################################################
     php:
         container_name: laravel-api-php
-        #image: ghcr.io/aigletter/dictionary:master
         build:
             context: .
             dockerfile: Dockerfile
@@ -20,6 +19,8 @@ services:
         volumes:
             - .:/var/www:cached
             - ./.docker/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+            #- ./.docker/php/supervisor:/var/run/supervisor
+            - ./.docker/php/laravel-worker.conf:/etc/supervisor/conf.d/laravel-worker.conf
         environment:
             PHP_IDE_CONFIG: serverName=laravel-api
             APP_ENV: ${APP_ENV:-production}
@@ -40,13 +41,9 @@ services:
             - .:/var/www
             - .docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
             - .docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+            - .docker/logs:/var/log/php
         depends_on:
             - php
-        #environment:
-        #    - VIRTUAL_HOST=dictionary
-        #    - VIRTUAL_PORT=80
-#        networks:
-#            - laravel-api
 
     #composer:
     #    image: composer:lts
@@ -56,48 +53,35 @@ services:
     #    working_dir: /var/www
     #    command: bash -c "composer install"
 
-#    ####################################################################################################
-#    # DATABASE (MySQL)
-#    ####################################################################################################
-#    db:
-#        image: mysql
-#        container_name: laravel-api-db
-##        ports:
-##            - 3336:3306
-#        volumes:
-#            - .docker/db/data:/var/lib/mysql
-#            - .docker/db/my.cnf:/etc/mysql/conf.d/my.cnf
-#            - .docker/logs:/var/log/mysql
-#        environment:
-#            MYSQL_ROOT_PASSWORD: root
-#            MYSQL_DATABASE: laravel
-#            MYSQL_USER: laravel
-#            MYSQL_PASSWORD: laravel
-##        networks:
-##            - laravel-api
-
     # ####################################################################################################
     # # DATABASE (MariaDB)
     # ####################################################################################################
     db:
         image: mariadb
-        container_name: laravel-api-db
-        ports:
-            - 3336:3306
+        container_name: ${DB_HOST:-laravel-api-db}
+#        ports:
+#            - 3306:3306
         volumes:
             - .docker/db/data:/var/lib/mysql
             - .docker/db/my.cnf:/etc/mysql/conf.d/my.cnf
-            #- .docker/db/sql:/docker-entrypoint-initdb.d
             - .docker/logs:/var/log/mysql
         environment:
             #MARIADB_ROOT_PASSWORD: root
-            MYSQL_ROOT_PASSWORD: root
-            MYSQL_DATABASE: laravel
-            MYSQL_USER: laravel
-            MYSQL_PASSWORD: laravel
+            MYSQL_ROOT_PASSWORD: ${APP_ENV:-root}
+            MYSQL_DATABASE: ${APP_ENV:-laravel}
+            MYSQL_USER: ${APP_ENV:-laravel}
+            MYSQL_PASSWORD: ${APP_ENV:-laravel}
+
+    swagger-editor:
+        image: swaggerapi/swagger-editor
+        container_name: laravel-api-swagger
+        ports:
+            - 8080:8080
+        volumes:
+            - ./openapi.yaml:/openapi.yaml
+        environment:
+            SWAGGER_FILE: /openapi.yaml
 
 networks:
     default:
         name: laravel-api
-#    laravel-api:
-#        driver: bridge

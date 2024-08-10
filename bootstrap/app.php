@@ -15,5 +15,10 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->render(function (Throwable $exception) {
+            return [
+                'message' => 'An error occurred',
+                'errors' => []
+            ];
+        });
     })->create();

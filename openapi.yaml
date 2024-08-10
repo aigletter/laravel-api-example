@@ -1,0 +1,129 @@
+openapi: 3.0.3
+info:
+  title: Test laravel API
+  description: |-
+    This is a sample API Server based on the OpenAPI 3.0 specification...
+  contact:
+    email: aigletter@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+  - url: http://localhost:8088/api/v1
+tags:
+  - name: submission
+    description: Test submission description
+paths:
+  /submissions:
+    get:
+      tags:
+        - submission
+      summary: Get submissions
+      description: Get submissions
+      operationId: getSubmissions
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SubmissionCollection'
+        '400':
+          description: Invalid status value
+  /submit:
+    post:
+      tags:
+        - submission
+      summary: Create an submission
+      description: Create an submission to the store
+      operationId: createSubmission
+      requestBody:
+        description: Create a new submission in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Submission'
+        required: true
+      responses:
+        '202':
+          description: Successful accepted
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+#      security:
+#        - submission_store_auth:
+#            - write:submissions
+#            - read:submissions
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Error'
+    Error:
+      type: object
+      properties:
+        text:
+          type: string
+    SubmissionCollection:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Submission"
+        links:
+          type: object
+    Submission:
+      type: object
+      required:
+        - name
+        - email
+        - message
+      properties:
+        name:
+          type: string
+          example: John Doe
+        email:
+          type: string
+          example: john.doe@example.com
+        message:
+          type: string
+          example: This is a test message.
+#  requestBodies:
+#    Submission:
+#      description: Submission object that needs to be added to the store
+#      content:
+#        application/json:
+#          schema:
+#            $ref: '#/components/schemas/Submission'
+#  securitySchemes:
+#    submission_store_auth:
+#      type: oauth2
+#      flows:
+#        implicit:
+#          authorizationUrl: https://petstore3.swagger.io/oauth/authorize
+#          scopes:
+#            write:submissions: modify submissiosn in your account
+#            read:submissions: read your submissions
+#    api_key:
+#      type: apiKey
+#      name: api_key
+#      in: header

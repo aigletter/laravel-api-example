@@ -67,10 +67,10 @@ services:
             - .docker/logs:/var/log/mysql
         environment:
             #MARIADB_ROOT_PASSWORD: root
-            MYSQL_ROOT_PASSWORD: ${APP_ENV:-root}
-            MYSQL_DATABASE: ${APP_ENV:-laravel}
-            MYSQL_USER: ${APP_ENV:-laravel}
-            MYSQL_PASSWORD: ${APP_ENV:-laravel}
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+            MYSQL_DATABASE: ${MYSQL_DATABASE:-laravel}
+            MYSQL_USER: ${MYSQL_USER:-laravel}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD:-laravel}
 
     swagger-editor:
         image: swaggerapi/swagger-editor

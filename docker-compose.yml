@@ -58,7 +58,7 @@ services:
     # ####################################################################################################
     db:
         image: mariadb
-        container_name: ${DB_HOST:-laravel-api-db}
+        container_name: laravel-api-db
 #        ports:
 #            - 3306:3306
         volumes:

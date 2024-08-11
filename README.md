@@ -13,15 +13,15 @@ git clone git@github.com:aigletter/laravel-api.git
 cp .env.example .env
 ```
 
-3. Install compose dependencies
-
+3. Start docker containers
 ```shell
-composer install
+docker compose up -d
 ```
 
-4. Start docker containers
+4. Install compose dependencies
+
 ```shell
-docker compose up
+docker compose exec php composer install
 ```
 
 5. Run migrations 
@@ -35,6 +35,7 @@ docker compose exec php supervisord -c /etc/supervisor/supervisord.conf
 ```
 
 #### Usage
+
 Go to [http://localhost:8080](http://localhost:8080) in your browser.
 
 Enjoy!

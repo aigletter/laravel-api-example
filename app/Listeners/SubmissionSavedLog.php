@@ -9,7 +9,7 @@ use Psr\Log\LoggerInterface;
 
 class SubmissionSavedLog
 {
-    private $logger;
+    private LoggerInterface $logger;
 
     /**
      * Create the event listener.

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exceptions\InvalidInputException;
 use App\Http\Requests\SubmissionRequest;
 use App\Jobs\SubmissionJob;
+use Illuminate\Contracts\Bus\QueueingDispatcher;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
@@ -16,7 +17,7 @@ class SubmitController extends Controller
      * @return Response
      * @throws InvalidInputException
      */
-    public function __invoke(Request $request)
+    /*public function __invoke(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'string', 'min:2', 'max:32'],
@@ -31,7 +32,7 @@ class SubmitController extends Controller
         SubmissionJob::dispatch(...$validator->validated());
 
         return new Response(null, 202);
-    }
+    }*/
 
     /**
      * FormRequest implements validation, exception trigger and message formatting
@@ -40,10 +41,12 @@ class SubmitController extends Controller
      * @param SubmissionRequest $request
      * @return Response
      */
-    /*public function __invoke(SubmissionRequest $request)
+    public function __invoke(SubmissionRequest $request, QueueingDispatcher $dispatcher)
     {
-        SubmissionJob::dispatch(..$request->all(['name', 'email', 'message'));
+        $dispatcher->dispatch(
+            new SubmissionJob($request->post('name'), $request->post('email'), $request->post('message'))
+        );
 
         return new Response(null, 202);
-    }*/
+    }
 }

@@ -11,15 +11,7 @@ class SubmissionSaved
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    private $submission;
-
-    /**
-     * @return Submission
-     */
-    public function getSubmission()
-    {
-        return $this->submission;
-    }
+    private Submission $submission;
 
     /**
      * Create a new event instance.
@@ -27,5 +19,13 @@ class SubmissionSaved
     public function __construct(Submission $submission)
     {
         $this->submission = $submission;
+    }
+
+    /**
+     * @return Submission
+     */
+    public function getSubmission(): Submission
+    {
+        return $this->submission;
     }
 }

@@ -12,6 +12,7 @@ class SubmissionCollectionController
      */
     public function __invoke()
     {
-        return new SubmissionCollection(Submission::query()->get());
+        $submissions = Submission::query()->get();
+        return new SubmissionCollection($submissions);
     }
 }

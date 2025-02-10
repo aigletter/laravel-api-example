@@ -4,13 +4,13 @@ namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler;
 use Illuminate\Http\Response;
+use Illuminate\Validation\ValidationException;
 
 class ErrorHandler extends Handler
 {
     public function register()
     {
-        // Other type of exceptions are handled with a function in bootstrap/app.php file
-        $this->renderable(function (InvalidInputException $exception) {
+        $this->renderable(function (ValidationException $exception) {
             $messages = $exception->validator->errors()->messages();
             return new Response([
                 'message' => $exception->getMessage(),

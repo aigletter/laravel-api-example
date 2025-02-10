@@ -16,7 +16,7 @@ RUN apt-get update \
 RUN docker-php-ext-install zip pdo_mysql
 
 # Xdebug
-#RUN pecl install xdebug && docker-php-ext-enable xdebug
+RUN pecl install xdebug && docker-php-ext-enable xdebug
 
 # Supervisor
 RUN apt-get install -y supervisor

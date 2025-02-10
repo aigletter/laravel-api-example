@@ -6,16 +6,17 @@ use App\Events\SubmissionSaved;
 use App\Services\Service;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class SubmissionJob implements ShouldQueue
 {
     use Queueable;
 
-    protected $name;
+    protected string $name;
 
-    protected $email;
+    protected string $email;
 
-    protected $message;
+    protected string $message;
 
     /**
      * Create a new job instance.
@@ -30,9 +31,11 @@ class SubmissionJob implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(Service $service): void
+    public function handle(Service $service, EventDispatcher $eventDispatcher): void
     {
         $submission = $service->create($this->name, $this->email, $this->message);
-        SubmissionSaved::dispatch($submission);
+        $eventDispatcher->dispatch(
+            new SubmissionSaved($submission)
+        );
     }
 }
